@@ -33,6 +33,7 @@ export default function AdminPage() {
     useEffect(()=>{
         getUsers()
     },[])
+    setAllSelected(false)
 
     const getUsers = async () =>{
         const response = await axios.get(`${BASE_URL}/api/get/users`)
