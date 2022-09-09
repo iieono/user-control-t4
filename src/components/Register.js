@@ -42,7 +42,7 @@ export default function Register() {
     }
     try{
       const response = await axios.post(`${BASE_URL}/api/manage/register/user`, body)
-      console.log(response)
+      console.log(response.data)
       if(response.data){
         localStorage.setItem('user', JSON.stringify(response.data))
         dispatch(setUser(response.data))

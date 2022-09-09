@@ -72,26 +72,11 @@ export default function Header() {
     }
 
   }
-  const changeLanguage = (e, lang) =>{
-    e.preventDefault()
-    if(lang === 'uz'){
-      dispatch(changeUz)
-      localStorage.setItem('language', lang)
-      setLanguageL(lang)
-    } else if(lang === 'eng'){
-      dispatch(changeEng)
-      localStorage.setItem('language', lang)
-      setLanguageL(lang)
-    } else{
-      console.log(lang)
-    }
-    window.location.reload()
-
-  }
-  const handleTheme = (e) =>{
-    e.preventDefault()
-    localStorage.setItem('theme', themeContext == 'light' ? 'dark' : 'light')
-    setThemeContext(themeContext === 'light' ? 'dark' : 'light')
+  const logOut = ()=>{
+    dispatch(
+      setUser(null)
+    )
+    localStorage.removeItem('user')
   }
   return (
     <nav className={`navbar flex-column flex-sm-row container-fluid flex-wrap shadow ${themeContext === 'light' ? 'bg-light text-dark' : 'bg-dark text-light border-bottom-light'} mb-4 p-1 `}>
@@ -105,7 +90,7 @@ export default function Header() {
             <Link to={`/${user ? '' : 'login'}`}>
             <button className="btn btn-outline-success">{
               user && user ? (
-                <i class={`fa-solid fa-arrow-right-to-bracket ${themeContext === 'dark' ? 'text-light' : 'text-dark'}`} ></i>
+                <i class={`fa-solid fa-arrow-right-to-bracket ${themeContext === 'dark' ? 'text-light' : 'text-dark'}`} onClick={logOut}></i>
                 ) : (
                 <i class={`fa-solid fa-arrow-right-to-bracket ${themeContext === 'dark' ? 'text-light' : 'text-dark'}`}></i>
               )
