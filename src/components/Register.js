@@ -41,7 +41,7 @@ export default function Register() {
       password : password,
     }
     try{
-      const response = await axios.post(`${BASE_URL}/api/register`, body)
+      const response = await axios.post(`${BASE_URL}/api/manage/register/user`, body)
       console.log(response)
       if(response.data){
         localStorage.setItem('user', JSON.stringify(response.data))
