@@ -39,20 +39,8 @@ export default function Header() {
     setSearchI('')
   }, [window.location.href])
 
-  const BASE_URL = 'https://user-collection-backend.herokuapp.com'
+  const BASE_URL = 'http://localhost:8000'
   const getData = async () =>{
-    
-    try{
-      const responseAll = await axios.get(`${BASE_URL}/api/other/all/get`)
-      if(responseAll.data){
-        setAll(responseAll.data)
-      }else{
-        console.log('error occured')
-      }
-
-    }catch(err){
-      console.log(err)
-    }
     if(!user){
       return
     }
@@ -63,7 +51,7 @@ export default function Header() {
     }
 
     try{
-      const response = await axios.post(`${BASE_URL}/api/users/login`, body)
+      const response = await axios.post(`${BASE_URL}/api/user/login`, body)
       if(response.data){
         if(!Boolean(response.data.is_active)){
           toast.error('You have been blocked')
@@ -84,16 +72,6 @@ export default function Header() {
     }
 
   }
-  const searchHandle = ()=>{
-    const navbar = document.querySelector('.navbar')
-    navbar.style='position : fixed'
-    setTimeout(()=>{
-      navbar.style='position : relative'
-    }, 5000)
-    setResult(all.filter(item => item.name === searchI && window.find(searchI)))
-  }
-  console.log(result)
-
   const changeLanguage = (e, lang) =>{
     e.preventDefault()
     if(lang === 'uz'){
@@ -117,68 +95,23 @@ export default function Header() {
   }
   return (
     <nav className={`navbar flex-column flex-sm-row container-fluid flex-wrap shadow ${themeContext === 'light' ? 'bg-light text-dark' : 'bg-dark text-light border-bottom-light'} mb-4 p-1 `}>
-      <div className="col-sm-4 ps-sm-4">
+      <div className="col-6 ps-sm-3">
         <Link to="/">
-          <img src={Logo} alt="logo" className={`logo ${themeContext === 'dark' ? 'invert_effect' : ''}`} />
+          <h3>Users</h3>
         </Link>
       </div>
-      <div className="d-flex col-sm-8 d-flex justify-content-center">
-        <div className="col-6 d-flex input-group input-group-search dropdown">
-          <input type="text" className="form-control" placeholder={langPack.search} value={searchI} onChange={(e)=> setSearchI(e.target.value)}/>
-          <button data-bs-toggle="dropdown" aria-expanded="false" className={`dropdown-toggle btn btn-outline-secondary ${themeContext === 'dark' ? 'text-light' : ''}`} onClick={searchHandle}>
-            <i class="fa-solid fa-magnifying-glass-arrow-right"></i>
-          </button>
-          {result && (
-            <ul className="dropdown-menu">
-              {result.map((res)=> (
-                <li className="dropdown-item col-12"><Link to={`/${res.type === 'item' ? 'item' : 'collection'}/${res.id}`} className='col-12'>{res.name}</Link></li>
-                ))}
-            </ul>
-              )}
-        </div>
-        <div className="col-6 d-flex justify-content-end gap-1 pe-sm-4">
-          <div className="dropdown-center ">
-            <button
-              className={`btn btn-outline-success ${themeContext === 'dark' ? 'text-light' : 'text-dark'}`}
-              type="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              <i class="fa-solid fa-globe "></i>
-            </button>
-            <ul class="dropdown-menu p-0">
-              <li>
-                <button class={`btn dropdown-item ${languageL === 'eng' ? 'bg-info' : ''}`} onClick={(e => (changeLanguage(e, 'eng')))}>
-                 English
-                </button>
-              </li>
-              <li>
-                <button class={`btn dropdown-item ${languageL === 'uz' ? 'bg-info' : ''}`} onClick={(e => (changeLanguage(e, 'uz')))}>
-                  O`zbekcha
-                </button>
-              </li>
-            </ul>
-          </div>
+      <div className="d-flex col-6 d-flex justify-content-end pe-3">
           <div>
-            <button className="btn btn-outline-success" onClick={handleTheme}>
-              {
-              themeContext === 'dark' ? (<i class="fa-solid fa-moon text-light"></i>) :
-              (<i class="fa-solid fa-sun"></i>)
-            }
-            </button>
-          </div>
-          <div>
-            <Link to={`/${user ? 'user/'+ user.id : 'login'}`}>
+            <Link to={`/${user ? '' : 'login'}`}>
             <button className="btn btn-outline-success">{
               user && user ? (
-                <i class={`fa-solid fa-user ${themeContext === 'dark' ? 'text-light' : 'text-dark'}`}></i>
-                ) :(
+                <i class={`fa-solid fa-arrow-right-to-bracket ${themeContext === 'dark' ? 'text-light' : 'text-dark'}`} ></i>
+                ) : (
                 <i class={`fa-solid fa-arrow-right-to-bracket ${themeContext === 'dark' ? 'text-light' : 'text-dark'}`}></i>
               )
             }
             </button>
             </Link>
-          </div>
         </div>
       </div>
     </nav>

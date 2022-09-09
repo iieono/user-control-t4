@@ -15,14 +15,14 @@ export default function Login() {
   const { langPack } = useSelector((state)=> state.theme)
   useEffect(()=>{
     if(user){
-      navigate(`/user/${user.id}`)
+      navigate(`/`)
     }
   },[user])
   
   const [email, setEmail] = useState("");
   const [password, setPasswordd] = useState("");
   
-  const BASE_URL = 'https://user-control-t4.herokuapp.com'
+  const BASE_URL = 'http://localhost:8000'
   const handleSubmit = async (e) =>{
     e.preventDefault()
     
@@ -36,7 +36,7 @@ export default function Login() {
     }
 
     try{
-      const response = await axios.post(`${BASE_URL}/api/users/login`, body)
+      const response = await axios.post(`${BASE_URL}/api/user/login`, body)
       if(response.data){
         if(!response.data.is_active){
           toast.error(langPack.register.isBlocked)
@@ -44,6 +44,7 @@ export default function Login() {
         }
         localStorage.setItem('user', JSON.stringify(response.data))
         dispatch(setUser(response.data))
+        console.log(response.data)
         localStorage.setItem('p', JSON.stringify(password))
         dispatch(setPassword(password))
       }

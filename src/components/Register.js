@@ -23,7 +23,7 @@ export default function Register() {
   const [password, setPassword] = useState('')
   const [rePassword, setRePassword] = useState('')
   
-  const BASE_URL = 'https://user-control-t4.herokuapp.com'
+  const BASE_URL = 'http://localhost:8000'
   const handleSubmit = async (e) =>{
     e.preventDefault()
     if(!name || !email || !password || !rePassword){
@@ -41,11 +41,12 @@ export default function Register() {
       password : password,
     }
     try{
-      const response = await axios.post(`${BASE_URL}/api/users`, body)
+      const response = await axios.post(`${BASE_URL}/api/register`, body)
       console.log(response)
       if(response.data){
         localStorage.setItem('user', JSON.stringify(response.data))
         dispatch(setUser(response.data))
+        navigate('/')
       }
     }catch(err){
       toast.error('User already exists')

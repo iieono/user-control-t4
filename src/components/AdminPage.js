@@ -12,218 +12,264 @@ export default function AdminPage() {
     const [themeContext] = useContext(ThemeContext)
     const { user } = useSelector((state)=> state.auth)
     const { langPack} = useSelector((state)=> state.theme)
-    const [admins, setAdmins] = useState([])
     const [users, setUsers] = useState([])
-    useEffect(()=>{
-        if(!user || !user.is_admin){
-          navigate('/')
-        }
-      },[ user ])
+    const [selected, setSelected] = useState([])
+    const [allSelected, setAllSelected] = useState(false)
+    console.log('selected', allSelected)
 
-    const BASE_URL = 'https://user-control-t4.herokuapp.com'
+    const BASE_URL = 'http://localhost:8000'
     useEffect(()=>{
-        getAdmins()
+      if(selected.length === users.length){
+        setAllSelected(true)
+      }else{
+        setAllSelected(false)
+      }
+    }, [selected])
+    useEffect(()=>{
+      if(!user){
+        navigate('/login')
+      }
+    }, [user])
+    useEffect(()=>{
         getUsers()
     },[])
-    const getAdmins = async () =>{
-        const response = await axios.get(`${BASE_URL}/api/users/admins`, {headers : {
-            'Authorization' : `Bearer ${user.token}`
-        }})
-        if(response.data){
-            setAdmins(response.data)
-        }
 
-    }
     const getUsers = async () =>{
-        const response = await axios.get(`${BASE_URL}/api/users/users`, {headers : {
-            'Authorization' : `Bearer ${user.token}`
-        }})
-
+        const response = await axios.get(`${BASE_URL}/api/get/users`)
         if(response.data){
             setUsers(response.data)
         }
 
     }
+    const unblockUsers = async()=>{
+      if(selected.length === 0) {
+        return
+      }
+      if(allSelected){
+        try{
+          const responseAll = await axios.post(`${BASE_URL}/api/unblock`, {
+            Headers : {
+              "Authorization" : `Bearer ${user.token}`
+            }
+          })
+        }catch(err){
+          console.log(err)
+        }
+        return
+      }
+      try{
+        for(let i = 0; i < selected.length; i++){
+          const response = await axios.post(`${BASE_URL}/api/unblock/${selected[i]}`, {
+            Headers :{
+              "Authorization" : `Bearer ${user.token}`
+            }
+          })
+        }
+        window.location.reload()
+
+      }catch(err){
+        console.log(err)
+      }
+      
+    }
+    const blockUsers = async()=>{
+      if(selected.length === 0) {
+        return
+      }
+      if(allSelected){
+        try{
+          const responseAll = await axios.post(`${BASE_URL}/api/block`, {
+            Headers :{
+              "Authorization" : `Bearer ${user.token}`
+            }
+          })
+        }catch(err){
+          console.log(err)
+        }
+        return
+      }
+      try{
+        for(let i = 0; i < selected.length; i++){
+          const response = await axios.post(`${BASE_URL}/api/block/${selected[i]}`, {
+            Headers :{
+              "Authorization" : `Bearer ${user.token}`
+            }
+          })
+        }
+        window.location.reload()
+
+      }catch(err){
+        console.log(err)
+      }
+      
+    }
+    const deleteUsers = async()=>{
+      if(selected.length === 0) {
+        return
+      }
+      if(allSelected){
+        try{
+          const responseAll = await axios.delete(`${BASE_URL}/api/all`, {
+            Headers :{
+              "Authorization" : `Bearer ${user.token}`
+            }
+          })
+          if(responseAll.allSelected){
+            window.location.reload()
+          }
+        }catch(err){
+          console.log(err)
+        }
+        return
+      }
+      try{
+        for(let i = 0; i < selected.length; i++){
+          const response = await axios.delete(`${BASE_URL}/api/delete/${selected[i]}`, {
+            Headers :{
+              "Authorization" : `Bearer ${user.token}`
+            }
+          })
+        }
+        window.location.reload()
+
+      }catch(err){
+        console.log(err)
+      }
+
+    }
+    const selectHandle = async()=>{
+      if(selected.length > 0){
+        setSelected([])
+        setAllSelected(false)
+      }else{
+        setSelected([...users.map((user) => user.id)])
+        setAllSelected(true)
+      }
+
+    }
   return (
     <div className={`${themeContext === 'light' ? '' : 'text-light'}`}>
       <div className="container-fluid rounded shadow col-11 p-2">
-        <div  className="border border-primary bg-primary rounded p-1 shadow">
-          <h5
-            class="h-5 m-0"
-            data-bs-toggle="collapse"
-            data-bs-target="#collapseAdmin"
-            aria-expanded="false"
-            aria-controls="collapseAdmin"
-          >
-            <i class="fa-solid fa-angles-down"></i> {langPack.admin.admins}
-          </h5>
+        <div  className="border border-primary rounded p-1 shadow d-flex justify-content-between">
+          <div className="form-control-checkbox d-flex align-items-center gap-3">
+            <input type='checkbox' value={allSelected} onClick={selectHandle} checked={allSelected}/>
+            <h5
+              class="m-0">
+              Users
+            </h5>
+          </div>
+          <div className="d-flex gap-2">
+          <button className="btn btn-sm btn-danger" onClick={blockUsers}>
+            <i class="fa-solid fa-lock"></i>
+          </button>
+          <button className="btn btn-sm btn-success" onClick={unblockUsers}>
+            <i class="fa-solid fa-unlock"></i>
+          </button>
+          <button className="btn btn-sm btn-danger" onClick={deleteUsers}>
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+          </div>
         </div>
-        <div className="collapse show" id="collapseAdmin">
-            {admins && admins.map((admin) => <User userL={admin} />)}
-        </div>
-      </div>
-      <div className="container-fluid rounded shadow col-11 p-2">
-        <div className="border border-primary bg-primary rounded p-1 shadow">
-          <h5
-            class="h-5 m-0"
-            data-bs-toggle="collapse"
-            data-bs-target="#collapseUser"
-            aria-expanded="false"
-            aria-controls="collapseUser"
-          >
-            <i class="fa-solid fa-angles-down"></i> {langPack.admin.users}
-          </h5>
-        </div>
-        <div className="collapse show" id="collapseUser">
-            {users && users.map((user) => <User userL={user} />)}
+        <div>
+            {users && users.map((user) => <User userL={user} selected={selected} setSelected={setSelected} />)}
         </div>
       </div>
-      
     </div>
   );
 }
 
-function User({ userL }) {
+function User({ userL, setSelected, selected }) {
     const { user } = useSelector((state)=> state.auth)
     const [themeContext] = useContext(ThemeContext)
-    const { langPack} = useSelector((state)=> state.theme)
-    const dispatch = useDispatch()
-    const navigate = useNavigate()
+    const [userSelected, setUserSelected] = useState(selected.includes(userL.id))
+    useEffect(()=>{
+      setUserSelected(selected.includes(userL.id))
+    }, [selected])
 
-    const BASE_URL = 'https://user-control-t4.herokuapp.com'
-    const toggleStatus = async() =>{
-        const body = {
-            id : userL.id,
-            is_active : userL.is_active
-        }
-        const response = await axios.post(`${BASE_URL}/api/users/status`, body, {
-            headers :{
-                'Authorization' : `Bearer ${user.token}`
-            }
-        })
-        if(response.data){
-          if(userL.id === user.id && userL.is_active){
-            dispatch(setUser(null))
-            localStorage.removeItem('user')
-            navigate('/login')
-          }
-        }
-        window.location.reload()
+    // const toggleStatus = async() =>{
+    //     const body = {
+    //         id : userL.id,
+    //         is_active : userL.is_active
+    //     }
+    //     const response = await axios.post(`${BASE_URL}/api/status`, body, {
+    //         headers :{
+    //             'Authorization' : `Bearer ${user.token}`
+    //         }
+    //     })
+    //     if(response.data){
+    //       if(userL.id === user.id && userL.is_active){
+    //         dispatch(setUser(null))
+    //         localStorage.removeItem('user')
+    //         navigate('/login')
+    //       }
+    //     }
+    //     window.location.reload()
 
-    }
-    const deleteUser = async()=>{
-      try{
-        const response = await axios.delete(`${BASE_URL}/api/users/${userL.id}`, {
-          headers :{
-            'Authorization' : `Bearer ${user.token}`
-          }
-        })
-        if(response.data){
-          if(user.id === userL.id){
-            dispatch(setUser(null))
-            localStorage.removeItem('user')
-            navigate('/login')
-          }
-          window.location.reload()
-        }
-      }catch(err){
-        toast.error('Error occurred')
+    // }
+    // const deleteUser = async()=>{
+    //   try{
+    //     const response = await axios.delete(`${BASE_URL}/api/${userL.id}`, {
+    //       headers :{
+    //         'Authorization' : `Bearer ${user.token}`
+    //       }
+    //     })
+    //     if(response.data){
+    //       if(user.id === userL.id){
+    //         dispatch(setUser(null))
+    //         localStorage.removeItem('user')
+    //         navigate('/login')
+    //       }
+    //       window.location.reload()
+    //     }
+    //   }catch(err){
+    //     toast.error('Error occurred')
 
-      }
+    //   }
       
+    // }
+    const selectHandle = ()=>{
+      if(userSelected){
+        setSelected(state => [...state.filter(user => !user.id === userL.id)])
+      }else{
+        console.log('add')
+        setSelected([...selected, userL.id])
+      }
     }
-    const toggleAdmin = async () =>{
-        const body = {
-            id : userL.id,
-            is_admin : userL.is_admin
-        }
-        const response = await axios.post(`${BASE_URL}/api/users/set-admin`, body, {
-            headers :{
-                'Authorization' : `Bearer ${user.token}`
-            }
-        })
-        if(response.data){
-          if(user.id === userL.id){
-            dispatch(setUser({...user, is_admin : false}))
-            localStorage.setItem('user', JSON.stringify({...user, is_admin : false}))
-          }
-            window.location.reload()
-        }
-    }
+
   return (
     <div className={`${themeContext === 'light' ? '' : 'text-light'} d-flex p-2 flex-column flex-sm-row rounded border-bottom border-primary justify-content-between align-items-center`}>
-      <div className="d-flex flex-column flex-md-row gap-1 col-12 col-sm-8 justify-content-between align-items-start align-items-md-center mb-1 mb-sm-0">
-        <div className="d-flex gap-2 col-12 col-md-7 align-items-center">
-          <div className="col-3 col-sm-3">
+        <div className="d-flex col-12 gap-1 align-items-center justify-content-between">
+          <input type='checkbox' value={userSelected} onClick={selectHandle} checked={userSelected}/>
+          <div className="col-1">
             ID:<strong> {userL.id}</strong>
           </div>
-          <div className="col-9 col-sm-9">
-            {userL.id === user.id ? langPack.admin.you : langPack.admin.name}:
+          <div className="col-1">
+            Name:
             <strong className="text-break"> {userL.name }</strong>
           </div>
-        </div>
-        <div className="col-12 col-sm-5 justify-content-start">
-            {langPack.admin.email}:
-          <strong className="text-break"> {userL.email}</strong>
-        </div>
-      </div>
-      <div className="d-flex gap-3 col-12 col-sm-4 justify-content-end align-items-center">
-        <div>
+          <div className="col-2">
+            <strong className="text-break"> {userL.email}</strong>
+          </div>
+          <div className="col-3">
+            <p className="m-0">Last seen:</p>
+            <strong className="text-break"> {userL.last_online.substring(0, 10) + ':' + userL.last_online.substring(11, 16) }</strong>
+          </div>
+          <div className="col-3">
+          <p className="m-0">Registered:</p>
+            <strong className="text-break"> {userL.registered.substring(0, 10) + ':' + userL.registered.substring(11, 16) }</strong>
+          </div>
+        <div className="col-1 text-center">
           {userL.is_active ? (
             <div className="bg-success p-1 text-light rounded">
-              <strong>{langPack.admin.isActive}</strong>
+              <strong>Active</strong>
             </div>
           ) : (
             <div className="bg-danger p-1 text-light rounded">
-              <strong>{langPack.admin.isBlocked}</strong>
+              <strong>Blocked</strong>
             </div>
           )}
         </div>
-        <div >
-        <Link to={`/user/${userL.id}`}>
-        <button className="btn btn-sm btn-info">
-          <i class="fa-solid fa-eye"></i>
-        </button>
-        </Link>
         </div>
-          <button class="btn btn-sm btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fa-solid fa-user-pen"></i>
-          </button>
-        <div className="dropdown-menu">
-            {/* edit status */}
-        <div className="dropdown-item">
-        {userL.is_active ? (
-          <button className="btn btn-sm btn-danger col-12 text-start" onClick={toggleStatus}>
-            <i class="fa-solid fa-lock"></i> {langPack.admin.block}
-          </button>
-        ) : (
-          <button className="btn btn-sm btn-success col-12 text-start" onClick={toggleStatus}>
-            <i class="fa-solid fa-unlock"></i> {langPack.admin.unblock}
-          </button>
-        )}
-        </div>
-        {/* delete user */}
-        <div className="dropdown-item">
-        <button className="btn btn-sm btn-danger col-12 text-start" onClick={deleteUser}>
-            <i class="fa-solid fa-trash-can"></i> {langPack.admin.delete}
-          </button>
-        </div>
-          {/* admin change */}
-        <div className="dropdown-item">
-        {userL.is_admin ? (
-          <button className="btn btn-sm btn-primary col-12 text-start" onClick={toggleAdmin}>
-            <i class="fa-solid fa-user-minus"></i> {langPack.admin.removeAdmin}
-          </button>
-          
-          ) : (
-            <button className="btn btn-sm btn-primary col-12 text-start" onClick={toggleAdmin}>
-            <i class="fa-solid fa-user-plus"></i> {langPack.admin.addAdmin}
-          </button>
-        )}
-        </div>
-
-        </div>
-      </div>
     </div>
   );
 }
