@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;400;700&family=Open+Sans:wght@300&display=swap');
+
+.logo{
+  max-width: 160px;
+}
+#root{
+  padding: 0px;
+}
+*{
+  font-size: 14px;
+}
+
+body {
+  margin: 0;
+  /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  sans-serif; */
+  font-family: 'Montserrat', sans-serif;
+  
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+}
+/* .cont-full{
+  background-image: url('https://img.freepik.com/free-vector/abstract-organic-lines-background_1017-26669.jpg?w=900&t=st=1662223811~exp=1662224411~hmac=83448bec50c29537402781b0f57f87c5a15174cdec8354e9cef05d1bc6b43d17');
+  background-repeat: repeat;
+} */
+.input-group-search{
+  max-width: 50%;
+}
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
