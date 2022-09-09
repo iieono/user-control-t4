@@ -22,7 +22,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPasswordd] = useState("");
   
-  const BASE_URL = 'http://localhost:8000'
+  const BASE_URL = 'https://user-control-t4.herokuapp.com'
   const handleSubmit = async (e) =>{
     e.preventDefault()
     

@@ -39,7 +39,7 @@ export default function Header() {
     setSearchI('')
   }, [window.location.href])
 
-  const BASE_URL = 'http://localhost:8000'
+  const BASE_URL = 'https://user-control-t4.herokuapp.com'
   const getData = async () =>{
     if(!user){
       return

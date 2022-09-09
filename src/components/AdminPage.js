@@ -17,7 +17,7 @@ export default function AdminPage() {
     const [allSelected, setAllSelected] = useState(false)
     console.log('selected', allSelected)
 
-    const BASE_URL = 'http://localhost:8000'
+    const BASE_URL = 'https://user-control-t4.herokuapp.com'
     useEffect(()=>{
       if(selected.length === users.length){
         setAllSelected(true)
